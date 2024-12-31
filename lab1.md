@@ -29,6 +29,7 @@ This playbook installs and configures Apache HTTP servers on managed hosts.
   become: true
 
   tasks:
+    # Display system facts such as OS, hostname, memory, and CPU details
     - name: Display system facts
       ansible.builtin.debug:
         msg:
@@ -37,6 +38,7 @@ This playbook installs and configures Apache HTTP servers on managed hosts.
           - "Memory Total: {{ ansible_facts['memtotal_mb'] }} MB"
           - "CPU Cores: {{ ansible_facts['processor_cores'] }}"
 
+    # Install required packages (httpd and firewalld)
     - name: Install required packages
       ansible.builtin.dnf:
         name: "{{ item }}"
@@ -45,6 +47,7 @@ This playbook installs and configures Apache HTTP servers on managed hosts.
         - httpd
         - firewalld
 
+    # Start required services (httpd and firewalld)
     - name: Start services
       ansible.builtin.service:
         name: "{{ item }}"
@@ -54,6 +57,7 @@ This playbook installs and configures Apache HTTP servers on managed hosts.
         - httpd
         - firewalld
 
+    # Deploy the virtual host configuration template
     - name: Deploy configuration template
       ansible.builtin.template:
         src: templates/vhost.conf.j2
@@ -63,6 +67,7 @@ This playbook installs and configures Apache HTTP servers on managed hosts.
         mode: '0644'
       notify: Restart httpd
 
+    # Copy the index.html file to the virtual host directory
     - name: Copy index.html
       ansible.builtin.copy:
         src: files/
@@ -71,6 +76,7 @@ This playbook installs and configures Apache HTTP servers on managed hosts.
         group: root
         mode: '0644'
 
+    # Ensure the firewall allows HTTP traffic
     - name: Ensure web server port is open
       ansible.posix.firewalld:
         state: enabled
@@ -80,6 +86,7 @@ This playbook installs and configures Apache HTTP servers on managed hosts.
       when: ansible_facts['os_family'] == 'RedHat'
 
   handlers:
+    # Restart the HTTPD service when notified
     - name: Restart httpd
       ansible.builtin.service:
         name: httpd
@@ -100,6 +107,7 @@ This playbook validates the web server's functionality by retrieving its content
   become: true
 
   tasks:
+    # Display system facts such as OS, hostname, memory, and CPU details
     - name: Display system facts
       ansible.builtin.debug:
         msg:
@@ -108,6 +116,7 @@ This playbook validates the web server's functionality by retrieving its content
           - "Memory Total: {{ ansible_facts['memtotal_mb'] }} MB"
           - "CPU Cores: {{ ansible_facts['processor_cores'] }}"
 
+    # Attempt to retrieve web content from target servers
     - name: Retrieve web content and write to error log on failure
       block:
         - name: Retrieve web content
@@ -116,6 +125,7 @@ This playbook validates the web server's functionality by retrieving its content
             return_content: true
           register: content
       rescue:
+        # Log error to a file if the retrieval fails
         - name: Write to error file
           ansible.builtin.lineinfile:
             path: /home/student/review-cr2/error.log
@@ -135,9 +145,11 @@ This master playbook imports and executes `dev_deploy.yml` and `get_web_content.
 
 ```yaml
 ---
+# Deploy and configure web servers
 - name: Deploy web servers
   ansible.builtin.import_playbook: dev_deploy.yml
 
+# Validate the web servers by retrieving web content
 - name: Retrieve web content
   ansible.builtin.import_playbook: get_web_content.yml
 ```
