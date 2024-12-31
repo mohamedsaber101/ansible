@@ -1,9 +1,10 @@
-Ansible Playbook: Web Server Deployment and Testing
+# 🚀 **Ansible Playbook: Web Server Deployment and Testing**
+
 This project contains three Ansible playbooks to automate the deployment, configuration, and validation of web servers.
 
-📂 Project Structure
-bash
-Code kopieren
+## 📂 **Project Structure**
+
+```
 /review-cr2
 ├── dev_deploy.yml      # Playbook for deploying and configuring web servers
 ├── get_web_content.yml # Playbook for testing web server content
@@ -12,13 +13,19 @@ Code kopieren
 │   └── vhost.conf.j2   # Jinja2 template for virtual host configuration
 └── files/
     └── index.html      # Sample web content file
-🛠️ 1. dev_deploy.yml
-Description:
+```
+
+---
+
+## 🛠️ **1. dev_deploy.yml**
+
+### **Description:**  
 This playbook installs and configures Apache HTTP servers on managed hosts.
 
-<details> <summary><strong>Click to expand playbook</strong></summary>
-yaml
-Code kopieren
+<details>
+<summary><strong>Click to expand playbook</strong></summary>
+
+```yaml
 ---
 - name: Install and configure web servers
   hosts: webservers
@@ -65,14 +72,21 @@ Code kopieren
       ansible.builtin.service:
         name: httpd
         state: restarted
+```
+
 </details>
-🧪 2. get_web_content.yml
-Description:
+
+---
+
+## 🧪 **2. get_web_content.yml**
+
+### **Description:**  
 This playbook validates the web server's functionality by retrieving its content.
 
-<details> <summary><strong>Click to expand playbook</strong></summary>
-yaml
-Code kopieren
+<details>
+<summary><strong>Click to expand playbook</strong></summary>
+
+```yaml
 ---
 - name: Test web content
   hosts: workstation
@@ -92,43 +106,75 @@ Code kopieren
             path: /home/student/review-cr2/error.log
             line: "{{ content }}"
             create: true
-</details>
-📋 3. site.yml
-Description:
-This master playbook imports and executes dev_deploy.yml and get_web_content.yml sequentially.
+```
 
-<details> <summary><strong>Click to expand playbook</strong></summary>
-yaml
-Code kopieren
+</details>
+
+---
+
+## 📋 **3. site.yml**
+
+### **Description:**  
+This master playbook imports and executes `dev_deploy.yml` and `get_web_content.yml` sequentially.
+
+<details>
+<summary><strong>Click to expand playbook</strong></summary>
+
+```yaml
 ---
 - name: Deploy web servers
   ansible.builtin.import_playbook: dev_deploy.yml
 
 - name: Retrieve web content
   ansible.builtin.import_playbook: get_web_content.yml
+```
+
 </details>
-🚦 How to Run the Playbooks
-Navigate to the project directory:
 
-bash
-Code kopieren
-cd /home/student/review-cr2
-Run the playbooks using ansible-navigator:
+---
 
-bash
-Code kopieren
-ansible-navigator run -m stdout site.yml
-Expected Output:
+## 🚦 **How to Run the Playbooks**
 
-All tasks should complete successfully.
-No errors should appear in the output.
-✅ Expected Results
-Host	OK	Changed	Unreachable	Failed	Skipped	Rescued	Ignored
-servera.lab.example.com	7	6	0	0	0	0	0
-serverb.lab.example.com	7	6	0	0	0	0	0
-workstation	2	0	0	0	0	0	0
-📖 Key Concepts Used
-Handlers: To restart services after configuration changes.
-Templates: Jinja2 templates for dynamic configurations.
-Error Handling: block and rescue for graceful failure management.
-Idempotency: Tasks ensure no unnecessary changes occur on repeated runs.
+1. **Navigate to the project directory:**
+   ```bash
+   cd /home/student/review-cr2
+   ```
+
+2. **Run the playbooks using `ansible-navigator`:**
+   ```bash
+   ansible-navigator run -m stdout site.yml
+   ```
+
+3. **Expected Output:**
+   - All tasks should complete successfully.
+   - No errors should appear in the output.
+
+---
+
+## ✅ **Expected Results**
+
+| Host                 | OK | Changed | Unreachable | Failed | Skipped | Rescued | Ignored |
+|-----------------------|----|---------|------------|--------|---------|---------|---------|
+| servera.lab.example.com | 7  | 6       | 0          | 0      | 0       | 0       | 0       |
+| serverb.lab.example.com | 7  | 6       | 0          | 0      | 0       | 0       | 0       |
+| workstation           | 2  | 0       | 0          | 0      | 0       | 0       | 0       |
+
+---
+
+## 📖 **Key Concepts Used**
+
+- **Handlers:** To restart services after configuration changes.  
+- **Templates:** Jinja2 templates for dynamic configurations.  
+- **Error Handling:** `block` and `rescue` for graceful failure management.  
+- **Idempotency:** Tasks ensure no unnecessary changes occur on repeated runs.  
+
+---
+
+## 📚 **Further Reading**
+
+- [Ansible Documentation](https://docs.ansible.com/)
+- [Ansible Best Practices](https://docs.ansible.com/ansible/latest/user_guide/playbooks_best_practices.html)
+
+---
+
+Happy Automating! 🚀✨
