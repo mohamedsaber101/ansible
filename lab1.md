@@ -28,6 +28,13 @@ This playbook installs and configures Apache HTTP servers on managed hosts.
   hosts: webservers
   become: true
 
+  vars:
+    web_packages:
+      - httpd
+      - firewalld
+    firewall_services:
+      - http
+
   tasks:
     # Display system facts such as OS, hostname, memory, and CPU details
     - name: Display system facts
@@ -38,24 +45,20 @@ This playbook installs and configures Apache HTTP servers on managed hosts.
           - "Memory Total: {{ ansible_facts['memtotal_mb'] }} MB"
           - "CPU Cores: {{ ansible_facts['processor_cores'] }}"
 
-    # Install required packages (httpd and firewalld)
+    # Install required packages
     - name: Install required packages
       ansible.builtin.dnf:
         name: "{{ item }}"
         state: present
-      loop:
-        - httpd
-        - firewalld
+      loop: "{{ web_packages }}"
 
-    # Start required services (httpd and firewalld)
+    # Start required services
     - name: Start services
       ansible.builtin.service:
         name: "{{ item }}"
         state: started
         enabled: true
-      loop:
-        - httpd
-        - firewalld
+      loop: "{{ web_packages }}"
 
     # Deploy the virtual host configuration template
     - name: Deploy configuration template
@@ -76,13 +79,14 @@ This playbook installs and configures Apache HTTP servers on managed hosts.
         group: root
         mode: '0644'
 
-    # Ensure the firewall allows HTTP traffic
-    - name: Ensure web server port is open
+    # Ensure the firewall allows necessary services
+    - name: Ensure web server ports are open
       ansible.posix.firewalld:
         state: enabled
         permanent: true
         immediate: true
-        service: http
+        service: "{{ item }}"
+      loop: "{{ firewall_services }}"
       when: ansible_facts['os_family'] == 'RedHat'
 
   handlers:
@@ -105,6 +109,11 @@ This playbook validates the web server's functionality by retrieving its content
 - name: Test web content
   hosts: workstation
   become: true
+
+  vars:
+    target_servers:
+      - servera.lab.example.com
+      - serverb.lab.example.com
 
   tasks:
     # Display system facts such as OS, hostname, memory, and CPU details
@@ -131,9 +140,7 @@ This playbook validates the web server's functionality by retrieving its content
             path: /home/student/review-cr2/error.log
             line: "Error retrieving content from {{ item }}: {{ content }}"
             create: true
-      loop:
-        - servera.lab.example.com
-        - serverb.lab.example.com
+      loop: "{{ target_servers }}"
 ```
 
 ---
@@ -181,17 +188,6 @@ This master playbook imports and executes `dev_deploy.yml` and `get_web_content.
 | servera.lab.example.com | 7  | 6       | 0          | 0      | 0       | 0       | 0       |
 | serverb.lab.example.com | 7  | 6       | 0          | 0      | 0       | 0       | 0       |
 | workstation           | 2  | 0       | 0          | 0      | 0       | 0       | 0       |
-
----
-
-## 📖 **Key Concepts Used**
-
-- **Facts:** Display system-specific information.
-- **Loops:** Repeat tasks for multiple items.
-- **Conditions:** Tasks execute based on OS family.
-- **Handlers:** Restart services after changes.
-- **Templates:** Jinja2 for dynamic configurations.
-- **Error Handling:** `block` and `rescue` for graceful failure management.
 
 ---
 
