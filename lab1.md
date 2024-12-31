@@ -32,16 +32,30 @@ This playbook installs and configures Apache HTTP servers on managed hosts.
   become: true
 
   tasks:
-    - name: Install httpd package
-      ansible.builtin.dnf:
-        name: httpd
-        state: present
+    - name: Display system facts
+      ansible.builtin.debug:
+        msg:
+          - "Operating System: {{ ansible_facts['os_family'] }}"
+          - "Hostname: {{ ansible_facts['hostname'] }}"
+          - "Memory Total: {{ ansible_facts['memtotal_mb'] }} MB"
+          - "CPU Cores: {{ ansible_facts['processor_cores'] }}"
 
-    - name: Start httpd service
+    - name: Install required packages
+      ansible.builtin.dnf:
+        name: "{{ item }}"
+        state: present
+      loop:
+        - httpd
+        - firewalld
+
+    - name: Start services
       ansible.builtin.service:
-        name: httpd
+        name: "{{ item }}"
         state: started
         enabled: true
+      loop:
+        - httpd
+        - firewalld
 
     - name: Deploy configuration template
       ansible.builtin.template:
@@ -66,6 +80,7 @@ This playbook installs and configures Apache HTTP servers on managed hosts.
         permanent: true
         immediate: true
         service: http
+      when: ansible_facts['os_family'] == 'RedHat'
 
   handlers:
     - name: Restart httpd
@@ -93,19 +108,30 @@ This playbook validates the web server's functionality by retrieving its content
   become: true
 
   tasks:
+    - name: Display system facts
+      ansible.builtin.debug:
+        msg:
+          - "Operating System: {{ ansible_facts['os_family'] }}"
+          - "Hostname: {{ ansible_facts['hostname'] }}"
+          - "Memory Total: {{ ansible_facts['memtotal_mb'] }} MB"
+          - "CPU Cores: {{ ansible_facts['processor_cores'] }}"
+
     - name: Retrieve web content and write to error log on failure
       block:
         - name: Retrieve web content
           ansible.builtin.uri:
-            url: http://servera.lab.example.com
+            url: http://{{ item }}
             return_content: true
           register: content
       rescue:
         - name: Write to error file
           ansible.builtin.lineinfile:
             path: /home/student/review-cr2/error.log
-            line: "{{ content }}"
+            line: "Error retrieving content from {{ item }}: {{ content }}"
             create: true
+      loop:
+        - servera.lab.example.com
+        - serverb.lab.example.com
 ```
 
 </details>
@@ -163,17 +189,12 @@ This master playbook imports and executes `dev_deploy.yml` and `get_web_content.
 
 ## 📖 **Key Concepts Used**
 
-- **Handlers:** To restart services after configuration changes.  
-- **Templates:** Jinja2 templates for dynamic configurations.  
-- **Error Handling:** `block` and `rescue` for graceful failure management.  
-- **Idempotency:** Tasks ensure no unnecessary changes occur on repeated runs.  
-
----
-
-## 📚 **Further Reading**
-
-- [Ansible Documentation](https://docs.ansible.com/)
-- [Ansible Best Practices](https://docs.ansible.com/ansible/latest/user_guide/playbooks_best_practices.html)
+- **Facts:** Display system-specific information.
+- **Loops:** Repeat tasks for multiple items.
+- **Conditions:** Tasks execute based on OS family.
+- **Handlers:** Restart services after changes.
+- **Templates:** Jinja2 for dynamic configurations.
+- **Error Handling:** `block` and `rescue` for graceful failure management.
 
 ---
 
