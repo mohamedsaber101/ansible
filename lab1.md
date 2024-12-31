@@ -22,9 +22,6 @@ This project contains three Ansible playbooks to automate the deployment, config
 ### **Description:**  
 This playbook installs and configures Apache HTTP servers on managed hosts.
 
-<details>
-<summary><strong>Click to expand playbook</strong></summary>
-
 ```yaml
 ---
 - name: Install and configure web servers
@@ -89,17 +86,12 @@ This playbook installs and configures Apache HTTP servers on managed hosts.
         state: restarted
 ```
 
-</details>
-
 ---
 
 ## 🧪 **2. get_web_content.yml**
 
 ### **Description:**  
 This playbook validates the web server's functionality by retrieving its content.
-
-<details>
-<summary><strong>Click to expand playbook</strong></summary>
 
 ```yaml
 ---
@@ -134,17 +126,12 @@ This playbook validates the web server's functionality by retrieving its content
         - serverb.lab.example.com
 ```
 
-</details>
-
 ---
 
 ## 📋 **3. site.yml**
 
 ### **Description:**  
 This master playbook imports and executes `dev_deploy.yml` and `get_web_content.yml` sequentially.
-
-<details>
-<summary><strong>Click to expand playbook</strong></summary>
 
 ```yaml
 ---
@@ -154,8 +141,6 @@ This master playbook imports and executes `dev_deploy.yml` and `get_web_content.
 - name: Retrieve web content
   ansible.builtin.import_playbook: get_web_content.yml
 ```
-
-</details>
 
 ---
 
