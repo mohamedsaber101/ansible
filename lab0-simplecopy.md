@@ -21,10 +21,10 @@ This project contains three simple Ansible playbooks demonstrating the use of th
 ```yaml
 ---
 - name: Write a simple line to a file
-  **hosts**: all
+  hosts: all
   become: true
 
-  **tasks**:
+  tasks:
     - name: Write a static line to a file
       ansible.builtin.copy:
         dest: /tmp/simple_file.txt
@@ -53,10 +53,10 @@ ansible-playbook -i inventory playbook1.yml
 ```yaml
 ---
 - name: Write system facts to a file
-  **hosts**: all
+  hosts: all
   become: true
 
-  **tasks**:
+  tasks:
     - name: Write CPU, Memory, and IP information to a file
       ansible.builtin.copy:
         dest: /tmp/facts_file.txt
@@ -88,10 +88,10 @@ ansible-playbook -i inventory playbook2.yml
 ```yaml
 ---
 - name: Replace a specific string in a file
-  **hosts**: all
+  hosts: all
   become: true
 
-  **tasks**:
+  tasks:
     - name: Replace 'static' with 'dynamic' in the file
       ansible.builtin.lineinfile:
         path: /tmp/simple_file.txt
