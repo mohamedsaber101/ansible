@@ -231,4 +231,35 @@ This master playbook imports and executes the `wildflyapp` and `nginx` roles seq
 
 ---
 
-Happy Automating! 🚀✨
+
+
+## 🛠️ ** playbook_clean.yml **
+
+### **Description:**  
+This playbook cleans the environment.
+
+```yaml
+---
+- name: Clean the environment
+  hosts: all
+  become: true
+
+  vars:
+    packages:
+      - nginx
+      -  java-headless
+
+
+  tasks:
+    # Removed previously installed packages
+    - name: Uninstall packages
+      ansible.builtin.dnf:
+        name: "{{ item }}"
+        state: absent
+      loop: "{{ packages }}"
+
+```
+   ```bash
+   ansible-navigator run -m stdout playbook_clean.yml
+   ```
+
