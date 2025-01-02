@@ -50,8 +50,8 @@ This role installs and configures WildFly application servers on managed hosts.
 
 - name: Copy WildFly application JAR
   ansible.builtin.copy:
-    src: example-jaxrs-war-swarm.jar
-    dest: /opt/wildflyapp/example-jaxrs-war-swarm.jar
+    src: app.jar
+    dest: /opt/wildflyapp/app.jar
     mode: '0644'
 
 - name: Deploy WildFly service
@@ -83,8 +83,31 @@ This role installs and configures WildFly application servers on managed hosts.
 ```
 
 **Files:**
-- `example-jaxrs-war-swarm.jar`: WildFly application JAR file.
+- `app.jar`: WildFly application JAR file.
+  ```
+   @ /home/student/artifacts/app.jar directory
+  ```
 - `wildflyapp.service`: Systemd service configuration.
+  
+```
+[Unit]
+Description=Wildfly Swarm Application Script
+After=auditd.service systemd-user-sessions.service time-sync.target
+
+[Service]
+User=root
+TimeoutStartSec=0
+Type=simple
+KillMode=process
+WorkingDirectory=/opt/wildflyapp
+ExecStart=/bin/java -jar /opt/wildflyapp/app.jar
+Restart=always
+RestartSec=2
+LimitNOFILE=5555
+
+[Install]
+WantedBy=multi-user.target
+```
 
 ---
 
