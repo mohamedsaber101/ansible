@@ -4,7 +4,6 @@ This project contains three Ansible playbooks to automate the deployment, config
 
 ## 📂 **Project Structure**
 
-```
 /review-cr2
 ├── dev_deploy.yml      # Playbook for deploying and configuring web servers
 ├── get_web_content.yml # Playbook for testing web server content
@@ -13,7 +12,7 @@ This project contains three Ansible playbooks to automate the deployment, config
 │   └── vhost.conf.j2   # Jinja2 template for virtual host configuration
 └── files/
     └── index.html      # Sample web content file
-```
+
 
 ---
 
@@ -22,7 +21,7 @@ This project contains three Ansible playbooks to automate the deployment, config
 ### **Description:**  
 This playbook installs and configures Apache HTTP servers on managed hosts.
 
-```yaml
+yaml
 ---
 - name: Install and configure web servers
   hosts: webservers
@@ -95,16 +94,50 @@ This playbook installs and configures Apache HTTP servers on managed hosts.
       ansible.builtin.service:
         name: httpd
         state: restarted
+
+
+---
+## 📝 **2. templates/vhost.conf.j2**
+
+```jinja
+<VirtualHost *:80>
+    ServerName {{ ansible_facts['hostname'] }}
+    DocumentRoot "/var/www/vhosts/{{ ansible_facts['hostname'] }}"
+
+    <Directory "/var/www/vhosts/{{ ansible_facts['hostname'] }}">
+        AllowOverride None
+        Require all granted
+    </Directory>
+
+    ErrorLog "/var/log/httpd/{{ ansible_facts['hostname'] }}_error.log"
+    CustomLog "/var/log/httpd/{{ ansible_facts['hostname'] }}_access.log" combined
+</VirtualHost>
 ```
 
 ---
 
-## 🧪 **2. get_web_content.yml**
+## 📄 **3. files/index.html**
+
+```html
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Welcome to {{ ansible_facts['hostname'] }}</title>
+</head>
+<body>
+    <h1>Welcome to {{ ansible_facts['hostname'] }} Web Server!</h1>
+    <p>This page is deployed and managed using Ansible.</p>
+    <p>Happy Automation 🚀✨</p>
+</body>
+</html>
+```
+## 🧪 **4. get_web_content.yml**
 
 ### **Description:**  
 This playbook validates the web server's functionality by retrieving its content.
 
-```yaml
+yaml
 ---
 - name: Test web content
   hosts: workstation
@@ -141,16 +174,16 @@ This playbook validates the web server's functionality by retrieving its content
             line: "Error retrieving content from {{ item }}: {{ content }}"
             create: true
       loop: "{{ target_servers }}"
-```
+
 
 ---
 
-## 📋 **3. site.yml**
+## 📋 **5. site.yml**
 
 ### **Description:**  
-This master playbook imports and executes `dev_deploy.yml` and `get_web_content.yml` sequentially.
+This master playbook imports and executes dev_deploy.yml and get_web_content.yml sequentially.
 
-```yaml
+yaml
 ---
 # Deploy and configure web servers
 - name: Deploy web servers
@@ -159,46 +192,37 @@ This master playbook imports and executes `dev_deploy.yml` and `get_web_content.
 # Validate the web servers by retrieving web content
 - name: Retrieve web content
   ansible.builtin.import_playbook: get_web_content.yml
-```
+
 
 ---
 
-## 📝 **4. templates/vhost.conf.j2**
+## 🚦 **How to Run the Playbooks**
 
-```jinja
-<VirtualHost *:80>
-    ServerName {{ ansible_facts['hostname'] }}
-    DocumentRoot "/var/www/vhosts/{{ ansible_facts['hostname'] }}"
+1. **Navigate to the project directory:**
+   
+bash
+   cd /home/student/review-cr2
 
-    <Directory "/var/www/vhosts/{{ ansible_facts['hostname'] }}">
-        AllowOverride None
-        Require all granted
-    </Directory>
 
-    ErrorLog "/var/log/httpd/{{ ansible_facts['hostname'] }}_error.log"
-    CustomLog "/var/log/httpd/{{ ansible_facts['hostname'] }}_access.log" combined
-</VirtualHost>
-```
+2. **Run the playbooks using ansible-navigator:**
+   
+bash
+   ansible-navigator run -m stdout site.yml
 
----
 
-## 📄 **5. files/index.html**
-
-```html
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Welcome to {{ ansible_facts['hostname'] }}</title>
-</head>
-<body>
-    <h1>Welcome to {{ ansible_facts['hostname'] }} Web Server!</h1>
-    <p>This page is deployed and managed using Ansible.</p>
-    <p>Happy Automation 🚀✨</p>
-</body>
-</html>
-```
+3. **Expected Output:**
+   - All tasks should complete successfully.
+   - No errors should appear in the output.
 
 ---
 
-Happy Automating! 🚀✨
+## ✅ **Expected Results**
+
+| Host                 | OK | Changed | Unreachable | Failed | Skipped | Rescued | Ignored |
+|-----------------------|----|---------|------------|--------|---------|---------|---------|
+| servera.lab.example.com | 7  | 6       | 0          | 0      | 0       | 0       | 0       |
+| serverb.lab.example.com | 7  | 6       | 0          | 0      | 0       | 0       | 0       |
+| workstation           | 2  | 0       | 0          | 0      | 0       | 0       | 0       |
+
+---
+
