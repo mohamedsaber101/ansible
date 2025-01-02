@@ -274,7 +274,7 @@ This playbook cleans the environment.
 
 ```yaml
 ---
-- name: Clean the envvornment
+- name: Clean the environment
   hosts: all
   become: true
 
