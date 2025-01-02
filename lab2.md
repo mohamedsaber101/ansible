@@ -261,6 +261,38 @@ This master playbook imports and executes `db_deploy.yml` and `test_db_content.y
 - **Templates:** Jinja2 for dynamic configurations.
 - **Error Handling:** `block` and `rescue` for graceful failure management.
 
+
 ---
 
-Happy Automating! 🚀✨
+
+
+
+## 🛠️ ** playbook_clean.yml **
+
+### **Description:**  
+This playbook cleans the environment.
+
+```yaml
+---
+- name: Install and configure web servers
+  hosts: webservers
+  become: true
+
+  vars:
+    web_packages:
+      - httpd
+      - firewalld
+
+
+  tasks:
+    # Removed previously installed packages
+    - name: Uninstall packages
+      ansible.builtin.dnf:
+        name: "{{ item }}"
+        state: absent
+      loop: "{{ web_packages }}"
+
+```
+   ```bash
+   ansible-navigator run -m stdout playbook_clean.yml
+   ```
