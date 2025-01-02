@@ -94,8 +94,6 @@ This role installs and configures the Apache HTTP server with a virtual host.
 <h1> Welcome :) </h1>
 ```
 
-**Files:**
-- `files/html/index.html`: Contains the web server content (`simple index`).
 
 ---
 
@@ -183,4 +181,34 @@ simple index
 
 ---
 
-Happy Automating! 🚀✨
+
+
+## 🛠️ ** playbook_clean.yml **
+
+### **Description:**  
+This playbook cleans the environment.
+
+```yaml
+---
+- name: Clean the environment
+  hosts: all
+  become: true
+
+  vars:
+    packages:
+      - httpd
+
+
+  tasks:
+    # Removed previously installed packages
+    - name: Uninstall packages
+      ansible.builtin.dnf:
+        name: "{{ item }}"
+        state: absent
+      loop: "{{ packages }}"
+
+```
+   ```bash
+   ansible-navigator run -m stdout playbook_clean.yml
+   ```
+
