@@ -9,6 +9,7 @@ This project contains three simple Ansible playbooks demonstrating the use of th
 ├── playbook1.yml   # Write a simple line to a file
 ├── playbook2.yml   # Write a line with system facts
 ├── playbook3.yml   # Replace a specific string in a file
+├── playbook_clean.yml   # Clean nodes
 ├── inventory       # Inventory file for target hosts
 ```
 
@@ -129,10 +130,26 @@ ansible-playbook -i inventory playbook3.yml
 ## 🚦 **4. Clean Up the Environment**
 
 After testing, clean up the environment:
-```bash
-rm -f /tmp/simple_file.txt /tmp/facts_file.txt
-```
+**Playbook:** `playbook_clean.yml`
+```yaml
+---
+- name: Clean nodes
+  hosts: all
+  become: true
 
+  tasks:
+    - name: Remove previously created files
+      ansible.builtin.file:
+        path: "{{ item }}"
+        state: absent
+      loop:
+      - /tmp/simple_file.txt
+      - /tmp/facts_file.txt
+```
+### **Run the Playbook:**
+```bash
+ansible-playbook -i inventory playbook_clean.yml
+```
 ---
 
 Happy Automating! 🚀✨
