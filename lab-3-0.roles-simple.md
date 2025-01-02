@@ -88,6 +88,12 @@ This role installs and configures the Apache HTTP server with a virtual host.
 </VirtualHost>
 ```
 
+**Files:** `roles/myvhost/files/html/index.html`
+
+```
+<h1> Welcome :) </h1>
+```
+
 **Files:**
 - `files/html/index.html`: Contains the web server content (`simple index`).
 
