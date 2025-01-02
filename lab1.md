@@ -229,7 +229,7 @@ This master playbook imports and executes `dev_deploy.yml` and `get_web_content.
 
 
 
-## 🛠️ ** playbook_clean.yml**
+## 🛠️ ** playbook_clean.yml **
 
 ### **Description:**  
 This playbook cleans the environment.
@@ -257,5 +257,5 @@ This playbook cleans the environment.
 
 ```
    ```bash
-   ansible-navigator run -m stdout site.yml
+   ansible-navigator run -m stdout playbook_clean.yml
    ```
