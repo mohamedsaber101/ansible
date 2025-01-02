@@ -225,3 +225,34 @@ This master playbook imports and executes `dev_deploy.yml` and `get_web_content.
 | workstation           | 2  | 0       | 0          | 0      | 0       | 0       | 0       |
 
 ---
+
+
+
+
+## 🛠️ ** playbook_clean.yml**
+
+### **Description:**  
+This playbook cleans the environment.
+
+```yaml
+---
+- name: Install and configure web servers
+  hosts: webservers
+  become: true
+
+  vars:
+    web_packages:
+      - httpd
+      - firewalld
+    firewall_services:
+      - http
+
+  tasks:
+    # Removed previously installed packages
+    - name: Uninstall packages
+      ansible.builtin.dnf:
+        name: "{{ item }}"
+        state: absent
+      loop: "{{ web_packages }}"
+
+```
