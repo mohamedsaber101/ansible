@@ -95,6 +95,73 @@ This playbook installs and configures MySQL database servers on managed hosts.
 
 ---
 
+---
+## 📄 **templates/db_config.cnf.j2**
+
+```jinja2
+[mysqld]
+user=mysql
+bind-address=0.0.0.0
+port={{ db_port }}
+datadir=/var/lib/mysql
+socket=/var/lib/mysql/mysql.sock
+log-error=/var/log/mysqld.log
+pid-file=/var/run/mysqld/mysqld.pid
+
+# Performance and tuning
+max_connections=200
+innodb_buffer_pool_size=1G
+innodb_log_file_size=256M
+
+[client]
+port={{ db_port }}
+socket=/var/lib/mysql/mysql.sock
+```
+
+**Explanation:**
+- `bind-address`: Allows remote connections (`0.0.0.0`).
+- `port`: Dynamic port assignment using `{{ db_port }}`.
+- `max_connections`: Limits the number of concurrent connections.
+- `innodb_*`: Configures InnoDB engine parameters.
+- `client`: Ensures client configurations align with server settings.
+
+---
+
+## 📄 **files/init_db.sql**
+
+```sql
+-- Create a sample database
+CREATE DATABASE IF NOT EXISTS sample_db;
+
+-- Switch to the sample database
+USE sample_db;
+
+-- Create a sample table
+CREATE TABLE IF NOT EXISTS users (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    username VARCHAR(50) NOT NULL,
+    email VARCHAR(100) NOT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+-- Insert sample data
+INSERT INTO users (username, email) VALUES ('admin', 'admin@example.com');
+INSERT INTO users (username, email) VALUES ('user1', 'user1@example.com');
+
+-- Create a dedicated database user
+CREATE USER IF NOT EXISTS 'app_user'@'%' IDENTIFIED BY 'secure_password';
+GRANT ALL PRIVILEGES ON sample_db.* TO 'app_user'@'%';
+FLUSH PRIVILEGES;
+```
+
+**Explanation:**
+- `CREATE DATABASE`: Ensures a database named `sample_db` exists.
+- `CREATE TABLE`: Defines a `users` table with sample fields.
+- `INSERT INTO`: Adds sample records for testing.
+- `CREATE USER`: Sets up a database user (`app_user`) with privileges on `sample_db`.
+- `GRANT`: Grants all necessary permissions to the user.
+- `FLUSH PRIVILEGES`: Ensures privilege changes take effect.
+---
 ## 🧪 **2. test_db_content.yml**
 
 ### **Description:**  
