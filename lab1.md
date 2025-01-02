@@ -256,3 +256,6 @@ This playbook cleans the environment.
       loop: "{{ web_packages }}"
 
 ```
+   ```bash
+   ansible-navigator run -m stdout site.yml
+   ```
