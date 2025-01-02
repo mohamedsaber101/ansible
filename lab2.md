@@ -279,9 +279,9 @@ This playbook cleans the environment.
   become: true
 
   vars:
-    web_packages:
-      - httpd
-      - firewalld
+    db_packages:
+      - mysql-server
+      - mysql-client
 
 
   tasks:
@@ -290,7 +290,7 @@ This playbook cleans the environment.
       ansible.builtin.dnf:
         name: "{{ item }}"
         state: absent
-      loop: "{{ web_packages }}"
+      loop: "{{ db_packages }}"
 
 ```
    ```bash
