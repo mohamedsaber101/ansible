@@ -163,31 +163,41 @@ This master playbook imports and executes `dev_deploy.yml` and `get_web_content.
 
 ---
 
-## 🚦 **How to Run the Playbooks**
+## 📝 **4. templates/vhost.conf.j2**
 
-1. **Navigate to the project directory:**
-   ```bash
-   cd /home/student/review-cr2
-   ```
+```jinja
+<VirtualHost *:80>
+    ServerName {{ ansible_facts['hostname'] }}
+    DocumentRoot "/var/www/vhosts/{{ ansible_facts['hostname'] }}"
 
-2. **Run the playbooks using `ansible-navigator`:**
-   ```bash
-   ansible-navigator run -m stdout site.yml
-   ```
+    <Directory "/var/www/vhosts/{{ ansible_facts['hostname'] }}">
+        AllowOverride None
+        Require all granted
+    </Directory>
 
-3. **Expected Output:**
-   - All tasks should complete successfully.
-   - No errors should appear in the output.
+    ErrorLog "/var/log/httpd/{{ ansible_facts['hostname'] }}_error.log"
+    CustomLog "/var/log/httpd/{{ ansible_facts['hostname'] }}_access.log" combined
+</VirtualHost>
+```
 
 ---
 
-## ✅ **Expected Results**
+## 📄 **5. files/index.html**
 
-| Host                 | OK | Changed | Unreachable | Failed | Skipped | Rescued | Ignored |
-|-----------------------|----|---------|------------|--------|---------|---------|---------|
-| servera.lab.example.com | 7  | 6       | 0          | 0      | 0       | 0       | 0       |
-| serverb.lab.example.com | 7  | 6       | 0          | 0      | 0       | 0       | 0       |
-| workstation           | 2  | 0       | 0          | 0      | 0       | 0       | 0       |
+```html
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Welcome to {{ ansible_facts['hostname'] }}</title>
+</head>
+<body>
+    <h1>Welcome to {{ ansible_facts['hostname'] }} Web Server!</h1>
+    <p>This page is deployed and managed using Ansible.</p>
+    <p>Happy Automation 🚀✨</p>
+</body>
+</html>
+```
 
 ---
 
