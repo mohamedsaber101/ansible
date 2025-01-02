@@ -244,8 +244,7 @@ This playbook cleans the environment.
     web_packages:
       - httpd
       - firewalld
-    firewall_services:
-      - http
+
 
   tasks:
     # Removed previously installed packages
