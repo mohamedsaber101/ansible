@@ -231,7 +231,12 @@ This master playbook imports and executes the `wildflyapp` and `nginx` roles seq
 
 ---
 
-
+**Hitting the loadbalancer `ansible-playbook`:**
+### **Description:**  
+Execute the following command multiple times to verify that the load balancer is functioning properly with the backend servers.
+   ```bash
+   curl node1
+   ```
 
 ## 🛠️ ** playbook_clean.yml **
 
