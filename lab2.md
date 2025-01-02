@@ -274,8 +274,8 @@ This playbook cleans the environment.
 
 ```yaml
 ---
-- name: Install and configure web servers
-  hosts: webservers
+- name: Clean the envvornment
+  hosts: all
   become: true
 
   vars:
