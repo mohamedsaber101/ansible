@@ -9,7 +9,7 @@ This project contains three simple Ansible playbooks demonstrating the use of th
 ├── playbook1.yml   # Write a simple line to a file
 ├── playbook2.yml   # Write a line with system facts
 ├── playbook3.yml   # Replace a specific string in a file
-├── playbook_clean.yml   # Clean nodes
+├── playbook_clean.yml   # clean up the environment
 ├── inventory       # Inventory file for target hosts
 ```
 
