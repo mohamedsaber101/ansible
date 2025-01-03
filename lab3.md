@@ -244,24 +244,57 @@ Execute the following command multiple times to verify that the load balancer is
 This playbook cleans the environment.
 
 ```yaml
----
-- name: Clean the environment
-  hosts: all
+- name: Clean up user accounts and configurations
+  hosts: webservers
   become: true
+  vars_files:
+    - vars/users_vars.yml
 
-  vars:
-    packages:
-      - nginx
-      -  java-headless
-
+  handlers:
+    - name: Restart sshd
+      ansible.builtin.service:
+        name: sshd
+        state: restarted
 
   tasks:
-    # Removed previously installed packages
-    - name: Uninstall packages
-      ansible.builtin.dnf:
-        name: "{{ item }}"
+    # Remove SSH authorized keys for each user
+    - name: Remove authorized keys for users
+      ansible.posix.authorized_key:
+        user: "{{ item['username'] }}"
+        key: "{{ lookup('file', 'files/' + item['username'] + '.key.pub') }}"
         state: absent
-      loop: "{{ packages }}"
+      loop: "{{ users }}"
+      ignore_errors: true
+
+    # Remove user accounts
+    - name: Remove user accounts
+      ansible.builtin.user:
+        name: "{{ item['username'] }}"
+        state: absent
+        remove: true
+      loop: "{{ users }}"
+      ignore_errors: true
+
+    # Remove webadmin group
+    - name: Remove webadmin group
+      ansible.builtin.group:
+        name: webadmin
+        state: absent
+
+    # Remove sudo configuration for webadmin group
+    - name: Remove sudo configuration for webadmin group
+      ansible.builtin.file:
+        path: /etc/sudoers.d/webadmin
+        state: absent
+      ignore_errors: true
+
+    # Restore default root login setting via SSH
+    - name: Enable root login via SSH
+      ansible.builtin.lineinfile:
+        dest: /etc/ssh/sshd_config
+        regexp: "^PermitRootLogin"
+        line: "PermitRootLogin yes"
+      notify: Restart sshd
 
 ```
    ```bash
