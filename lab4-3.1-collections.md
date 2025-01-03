@@ -11,8 +11,6 @@ This project demonstrates how to install Ansible Content Collections, use roles,
 ├── inventory
 ├── collections/
 │   ├── gls/utils/
-│   ├── redhat/insights/
-│   └── redhat/rhel_system_roles/
 ```
 
 ---
@@ -27,15 +25,6 @@ Use the `ansible-galaxy` command to install the `gls.utils` collection directly 
 ansible-galaxy collection install gls-utils-0.0.1.tar.gz -p collections
 ```
 
-### **Install Additional Collections (Optional)**
-
-If other collections are required, use the same command format:
-
-```bash
-ansible-galaxy collection install redhat-insights-1.0.7.tar.gz -p collections
-ansible-galaxy collection install redhat-rhel_system_roles-1.19.3.tar.gz -p collections
-```
-
 ### **Verify Installed Collections**
 
 ```bash
@@ -47,8 +36,6 @@ ansible-galaxy collection list -p collections
 Collection               Version
 ------------------------ -------
 gls.utils                0.0.1
-redhat.insights          1.0.7
-redhat.rhel_system_roles 1.19.3
 ```
 
 ---
@@ -102,98 +89,14 @@ changed: [servera.lab.example.com]
 
 ---
 
-## 🧪 **3. System Configuration Using Red Hat Collections**
-
-**Playbook:** `new_system.yml`
-
-```yaml
----
-- name: Configure the system
-  hosts: servera.lab.example.com
-  become: true
-  gather_facts: true
-
-  tasks:
-    # Register the system with Red Hat Insights
-    - name: Ensure the system is registered with Insights
-      ansible.builtin.include_role:
-        name: redhat.insights.insights_client
-      vars:
-        auto_config: false
-        insights_proxy: http://proxy.example.com:8080
-
-    # Ensure SELinux is set to Enforcing
-    - name: Ensure SELinux mode is Enforcing
-      ansible.builtin.include_role:
-        name: redhat.rhel_system_roles.selinux
-      vars:
-        selinux_state: enforcing
-```
-
-### **Run the Playbook in Check Mode**
-```bash
-ansible-navigator run -m stdout new_system.yml --check
-```
-
-**Expected Output:**
-```
-TASK [redhat.insights.insights_client : Set Insights Configuration Values] ***
-changed: [servera.lab.example.com]
-
-TASK [redhat.rhel_system_roles.selinux : Install SELinux python3 tools] ****
-ok: [servera.lab.example.com]
-```
-
----
-
-## ✅ **4. Verify Configurations**
-
-### **Check Apache Configuration**
-
-```bash
-ansible-navigator run -m stdout verify-config.yml
-```
-
-**Expected Output:**
-```
-<VirtualHost *:80>
-    ServerAdmin webmaster@servera.lab.example.com
-    ServerName servera.lab.example.com
-    ErrorLog logs/servera-error.log
-    DocumentRoot /var/www/vhosts/servera/
-</VirtualHost>
-```
-
-### **Verify Web Content**
-```bash
-curl http://servera.lab.example.com
-```
-
-**Expected Output:**
-```
-simple index
-```
-
----
-
 ## 📖 **Key Concepts Used**
 
 - **Ansible Galaxy:** Install and manage collections with `ansible-galaxy`.
 - **Modules:** Use `gls.utils.newping` for connectivity tests.
-- **Roles:** Utilize `gls.utils.backup`, `redhat.insights.insights_client`, and `redhat.rhel_system_roles.selinux`.
-- **Check Mode:** Test playbook changes without applying them.
-- **Syntax Validation:** Ensure playbooks are error-free with `--syntax-check`.
+- **Roles:** Utilize `gls.utils.backup` 
 
 ---
 
-## 🚦 **5. Clean Up the Environment**
 
-Finish the lab session:
-```bash
-lab finish role-collections
-```
 
----
-
-Happy Automating! 🚀✨
 
