@@ -237,3 +237,33 @@ Execute the following command multiple times to verify that the load balancer is
    ```bash
    curl node1
    ```
+
+## 🛠️ ** playbook_clean.yml **
+
+### **Description:**  
+This playbook cleans the environment.
+
+```yaml
+---
+- name: Clean the environment
+  hosts: all
+  become: true
+
+  vars:
+    packages:
+      - nginx
+      -  java-headless
+
+
+  tasks:
+    # Removed previously installed packages
+    - name: Uninstall packages
+      ansible.builtin.dnf:
+        name: "{{ item }}"
+        state: absent
+      loop: "{{ packages }}"
+
+```
+   ```bash
+   ansible-navigator run -m stdout playbook_clean.yml
+   ```
