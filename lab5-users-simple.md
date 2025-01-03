@@ -184,13 +184,69 @@ Permission denied, please try again.
 
 ---
 
-## 🚦 **5. Clean Up the Environment**
-
-Finish the lab session:
-```bash
-lab finish system-users
-```
-
 ---
 
-Happy Automating! 🚀✨
+
+## 🛠️ ** playbook_clean.yml **
+
+### **Description:**  
+This playbook cleans the environment.
+
+```yaml
+- name: Clean up user accounts and configurations
+  hosts: webservers
+  become: true
+  vars_files:
+    - vars/users_vars.yml
+
+  handlers:
+    - name: Restart sshd
+      ansible.builtin.service:
+        name: sshd
+        state: restarted
+
+  tasks:
+    # Remove SSH authorized keys for each user
+    - name: Remove authorized keys for users
+      ansible.posix.authorized_key:
+        user: "{{ item['username'] }}"
+        key: "{{ lookup('file', 'files/' + item['username'] + '.key.pub') }}"
+        state: absent
+      loop: "{{ users }}"
+      ignore_errors: true
+
+    # Remove user accounts
+    - name: Remove user accounts
+      ansible.builtin.user:
+        name: "{{ item['username'] }}"
+        state: absent
+        remove: true
+      loop: "{{ users }}"
+      ignore_errors: true
+
+    # Remove webadmin group
+    - name: Remove webadmin group
+      ansible.builtin.group:
+        name: webadmin
+        state: absent
+
+    # Remove sudo configuration for webadmin group
+    - name: Remove sudo configuration for webadmin group
+      ansible.builtin.file:
+        path: /etc/sudoers.d/webadmin
+        state: absent
+      ignore_errors: true
+
+    # Restore default root login setting via SSH
+    - name: Enable root login via SSH
+      ansible.builtin.lineinfile:
+        dest: /etc/ssh/sshd_config
+        regexp: "^PermitRootLogin"
+        line: "PermitRootLogin yes"
+      notify: Restart sshd
+
+```
+   ```bash
+   ansible-navigator run -m stdout playbook_clean.yml
+   ```
+
