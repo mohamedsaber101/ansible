@@ -76,7 +76,31 @@ timesync_ntp_servers:
   - hostname: classroom.example.com
     iburst: yes
 ```
+## 🌍 **3. Configure Time Zones for Data Centers**
 
+### **Create Time Zone Variables**
+
+Create separate time zone files for different data centers.
+
+**File:** `group_vars/na_datacenter/timezone.yml`
+```yaml
+host_timezone: America/Chicago
+```
+
+**File:** `group_vars/europe_datacenter/timezone.yml`
+```yaml
+host_timezone: Europe/Helsinki
+```
+
+### **Verify Time Zone Strings**
+
+Use the `timedatectl list-timezones` command to verify the valid time zone strings.
+```bash
+timedatectl list-timezones | grep Chicago
+timedatectl list-timezones | grep Helsinki
+```
+
+---
 ### **Playbook:** `configure_time.yml`
 
 ```yaml
@@ -108,31 +132,7 @@ timesync_ntp_servers:
 
 ---
 
-## 🌍 **3. Configure Time Zones for Data Centers**
 
-### **Create Time Zone Variables**
-
-Create separate time zone files for different data centers.
-
-**File:** `group_vars/na_datacenter/timezone.yml`
-```yaml
-host_timezone: America/Chicago
-```
-
-**File:** `group_vars/europe_datacenter/timezone.yml`
-```yaml
-host_timezone: Europe/Helsinki
-```
-
-### **Verify Time Zone Strings**
-
-Use the `timedatectl list-timezones` command to verify the valid time zone strings.
-```bash
-timedatectl list-timezones | grep Chicago
-timedatectl list-timezones | grep Helsinki
-```
-
----
 
 ## ✅ **4. Validate Playbook Syntax and Run**
 
@@ -193,13 +193,4 @@ Wed Aug 17 03:43:41 AM EEST 2022
 
 ---
 
-## 🚦 **6. Clean Up the Environment**
 
-Finish the lab session:
-```bash
-lab finish role-system
-```
-
----
-
-Happy Automating! 🚀✨
