@@ -1,7 +1,7 @@
 # 🚀 **Ansible Playbook: Managing Users, Groups, and SSH Configuration**
 
 This project demonstrates how to manage users, groups, sudo permissions, and SSH configurations using Ansible.
-
+![Logo](artifcats/aaaa.webp)
 ## 📂 **Project Structure**
 
 ```
