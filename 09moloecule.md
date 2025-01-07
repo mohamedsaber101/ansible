@@ -145,7 +145,7 @@ scenario:
 ```
 
 
- 🚦 **Molecule destruction:** `molecule/default/create.yml`
+ 🚦 **Molecule destruction:** 
 Try to create and destroy the testing infra using molecule, verify the creation and destruction of the container.
 ```bash
 molecule create
