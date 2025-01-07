@@ -251,6 +251,11 @@ molecule converge
         msg: "The server is not behaving as expected!"
       when: '"Welcome to Ansible" not in content.stdout'
 
+    - name: Printing the returned response
+      ansible.builtin.debug:
+        msg: "The returned response is: {{ content.stdout }}"
+
+
     
 ```
 
