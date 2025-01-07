@@ -130,7 +130,7 @@ scenario:
         volumes:
           - /sys/fs/cgroup:/sys/fs/cgroup:ro
 ```
-### 🚦 **Molecule destruction:** `molecule/default/create.yml`
+### 🚦 **Molecule destruction:** `molecule/default/destroy.yml`
 
 ```yaml
 ---
